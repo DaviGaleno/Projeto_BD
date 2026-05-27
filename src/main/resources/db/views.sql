@@ -1,12 +1,3 @@
--- =====================================================
--- VIEWS SQL - PROJETO DE BANCO DE DADOS
--- =====================================================
--- Este arquivo contém as Views utilizadas no projeto
--- Views são consultas pré-compiladas armazenadas no banco
--- =====================================================
-
--- VIEW 1: Histórico Completo do Aluno
--- Retorna o histórico acadêmico de cada aluno com disciplinas, professores e notas
 CREATE OR REPLACE VIEW vw_historico_aluno_completo AS
 SELECT 
     a.id as aluno_id,
@@ -29,8 +20,6 @@ LEFT JOIN disciplina d ON ma.disciplina_id = d.id
 LEFT JOIN professor p ON d.professor_id = p.id
 ORDER BY a.nome_completo, d.nome;
 
--- VIEW 2: Matrículas com Status Aprovado
--- Filtra apenas as matrículas com status APROVADO
 CREATE OR REPLACE VIEW vw_matriculas_aprovadas AS
 SELECT 
     ma.id,
@@ -51,8 +40,6 @@ INNER JOIN professor p ON d.professor_id = p.id
 WHERE ma.status = 'APROVADO'
 ORDER BY a.nome_completo, d.nome;
 
--- VIEW 3: Relatório de Desempenho por Disciplina
--- Agrupa dados de desempenho agrupados por disciplina
 CREATE OR REPLACE VIEW vw_relatorio_desempenho_disciplinas AS
 SELECT 
     d.id,

@@ -1,12 +1,4 @@
--- =====================================================
--- SUBQUERIES - PROJETO DE BANCO DE DADOS
--- =====================================================
--- Este arquivo contém exemplos de Subqueries utilizadas no projeto
--- Subqueries são consultas aninhadas dentro de outras consultas
--- =====================================================
 
--- SUBQUERY 1: Alunos com Múltiplas Matrículas
--- Busca alunos que têm mais matrículas que a média geral
 SELECT 
     a.id,
     a.nome_completo,
@@ -30,8 +22,6 @@ WHERE a.id IN (
 GROUP BY a.id, a.nome_completo, a.email
 ORDER BY total_matriculas DESC;
 
--- SUBQUERY 2: Disciplinas com Média Acima da Média Total
--- Lista disciplinas cujo desempenho médio está acima da média de todas as disciplinas
 SELECT 
     d.id,
     d.nome as disciplina,
@@ -58,8 +48,6 @@ END), 2) > (
 )
 ORDER BY media_disciplina DESC;
 
--- SUBQUERY 3: Professores com Disciplinas Sem Matrículas
--- Identifica professores que têm disciplinas sem nenhum aluno matriculado
 SELECT 
     p.id,
     p.nome_completo,
@@ -79,8 +67,6 @@ WHERE d.id IN (
 GROUP BY p.id, p.nome_completo, p.email
 ORDER BY disciplinas_sem_alunos DESC;
 
--- SUBQUERY 4: Alunos Reprovados e Suas Disciplinas
--- Lista alunos que foram reprovados e os detalhes das disciplinas
 SELECT 
     a.id,
     a.nome_completo,
@@ -96,8 +82,6 @@ LEFT JOIN matricula_aluno ma ON a.id = ma.aluno_id
 GROUP BY a.id, a.nome_completo, a.email
 ORDER BY total_reprovacoes DESC;
 
--- SUBQUERY 5: Relatório Dinâmico - Disciplinas Críticas
--- Identifica disciplinas com alta taxa de reprovação
 SELECT 
     d.id,
     d.nome as disciplina,

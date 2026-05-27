@@ -137,7 +137,6 @@ public class RelatorioService {
     private Map<String, TabelaRelatorio> criarTabelasPermitidas() {
         Map<String, TabelaRelatorio> mapa = new LinkedHashMap<>();
 
-        // TABELA 1: Alunos
         mapa.put("alunos", new TabelaRelatorio(
                 "alunos",
                 "Alunos",
@@ -149,7 +148,6 @@ public class RelatorioService {
                         campo("cpf", "a.cpf", "cpf", "CPF", true)
                 )));
 
-        // TABELA 2: Professores
         mapa.put("professores", new TabelaRelatorio(
                 "professores",
                 "Professores",
@@ -161,7 +159,6 @@ public class RelatorioService {
                         campo("cpf", "p.cpf", "cpf", "CPF", true)
                 )));
 
-        // TABELA 3: Disciplinas
         mapa.put("disciplinas", new TabelaRelatorio(
                 "disciplinas",
                 "Disciplinas",
@@ -173,7 +170,6 @@ public class RelatorioService {
                         campo("professor", "p.nome_completo", "professor", "Professor", true)
                 )));
 
-        // TABELA 4: Matrículas (com LEFT JOINs para relacionamentos)
         mapa.put("matriculas", new TabelaRelatorio(
                 "matriculas",
                 "Matriculas",
@@ -192,8 +188,6 @@ public class RelatorioService {
                         campo("status", "m.status", "status", "Status", true)
                 )));
 
-        // TABELA 5: Histórico do Aluno (Usando VIEW)
-        // Esta tabela utiliza a VIEW vw_historico_aluno_completo criada no banco
         mapa.put("historico_aluno", new TabelaRelatorio(
                 "historico_aluno",
                 "Histórico do Aluno",
@@ -209,8 +203,6 @@ public class RelatorioService {
                         campo("status", "status", "status", "Status", true)
                 )));
 
-        // TABELA 6: Matrículas Aprovadas (Usando VIEW)
-        // Esta tabela utiliza a VIEW vw_matriculas_aprovadas criada no banco
         mapa.put("matriculas_aprovadas", new TabelaRelatorio(
                 "matriculas_aprovadas",
                 "Matrículas Aprovadas",
@@ -223,8 +215,6 @@ public class RelatorioService {
                         campo("status", "status", "status", "Status", true)
                 )));
 
-        // TABELA 7: Desempenho por Disciplina (Usando VIEW com Aggregation)
-        // Utiliza a VIEW vw_relatorio_desempenho_disciplinas
         mapa.put("desempenho_disciplinas", new TabelaRelatorio(
                 "desempenho_disciplinas",
                 "Desempenho por Disciplina",
