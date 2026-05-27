@@ -311,31 +311,75 @@ spring.datasource.password=sua_senha
 ./mvnw spring-boot:run
 ```
 
-5. **Acessar a API:**
+---
+
+## 🌐 Acessar a Aplicação
+
+### Frontend + API Integrados
+
+A aplicaç��o **integra automaticamente o frontend e a API** na mesma aplicação Spring Boot!
+
 ```
-http://localhost:8080/alunos
+┌─────────────────────────────────┐
+│  Spring Boot (Porta 8081)       │
+│  ├─ API REST (/alunos, etc)     │
+│  └─ Servidor de Arquivos        │
+│     └─ static/ ✅               │
+│        ├─ index.html            │
+│        ├─ app.js                │
+│        └─ styles.css            │
+└─────────────────────────────────┘
 ```
+
+### 📍 Acessar a Interface Web
+
+Após o Spring Boot iniciar, simplesmente abra no navegador:
+
+```
+http://localhost:8081
+```
+
+**OU**
+
+```
+http://localhost:8081/index.html
+```
+
+### ✅ O que você verá:
+
+- Interface CRUD completa com **2 abas**:
+  - **CRUD**: Gerenciar Alunos, Professores, Disciplinas e Matrículas
+  - **Relatórios**: Gerar relatórios personalizados e exportar em CSV
+- Formulários para criar, editar e deletar registros
+- Tabelas dinâmicas com dados do banco
+- Integração perfeita com a API (sem CORS, mesma origem)
+
+### 🔍 Arquivos do Frontend
+
+Os arquivos do frontend estão em:
+```
+src/main/resources/static/
+├── index.html       # Página principal
+├── app.js           # Lógica JavaScript (requisições API)
+└── styles.css       # Estilos CSS
+```
+
+**Por que funciona assim?** Spring Boot serve automaticamente arquivos da pasta `static/` como conteúdo estático. Perfeito para aplicações integradas!
 
 ---
 
-## 📱 Frontend (Opcional)
+## 📱 Testes via API (Opcional)
 
-Se desejar usar um frontend separado em `http://localhost:5500`:
+Se preferir testar apenas a API (sem frontend), use **Insomnia** ou **Postman**:
 
-1. Criar pasta `frontend` com estrutura HTML/CSS/JavaScript
-2. Configurar CORS na API (adicionar em `@Configuration`):
-```java
-@Bean
-public WebMvcConfigurer corsConfigurer() {
-    return new WebMvcConfigurer() {
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/**").allowedOrigins("http://localhost:5500");
-        }
-    };
-}
 ```
-3. Servir arquivos HTML em `http://localhost:5500/index.html`
+URL Base: http://localhost:8081
+```
+
+**Exemplo - Listar Alunos:**
+```bash
+curl -X GET http://localhost:8081/alunos
+```
 
 ---
 
@@ -364,6 +408,7 @@ Este projeto demonstra a aplicação integrada de:
 ✅ RESTful API design
 ✅ Regras de negócio complexas
 ✅ Validação e integridade de dados
+✅ Frontend integrado com Backend (sem servidor externo necessário)
 
 O projeto foi desenvolvido como exercício acadêmico para consolidar conhecimentos em Banco de Dados, demonstrando como conceitos teóricos são aplicados em uma aplicação prática e profissional.
 
