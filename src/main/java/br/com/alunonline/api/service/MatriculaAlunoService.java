@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MatriculaAlunoService {
@@ -22,9 +23,33 @@ public class MatriculaAlunoService {
     @Autowired
     MatriculaAlunoRepository matriculaAlunoRepository;
 
+    public List<MatriculaAluno> listarTodasMatriculas() {
+        return matriculaAlunoRepository.findAll();
+    }
+
+    public Optional<MatriculaAluno> matriculaPorId(Long id) {
+        return matriculaAlunoRepository.findById(id);
+    }
+
     public void criarMatricula(MatriculaAluno matriculaAluno) {
         matriculaAluno.setStatus(MatriculaAlunoStatusEnum.MATRICULADO);
         matriculaAlunoRepository.save(matriculaAluno);
+    }
+
+    public void atualizarMatriculaPorId(Long id, MatriculaAluno matriculaEditada) {
+        MatriculaAluno matriculaAtual = matriculaAlunoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Matricula nao encontrada"));
+
+        matriculaEditada.setId(id);
+        if (matriculaEditada.getStatus() == null) {
+            matriculaEditada.setStatus(matriculaAtual.getStatus());
+        }
+        matriculaAlunoRepository.save(matriculaEditada);
+    }
+
+    public void deletarMatriculaPorId(Long id) {
+        matriculaAlunoRepository.deleteById(id);
     }
 
     public void trancarMatricula(Long id) {

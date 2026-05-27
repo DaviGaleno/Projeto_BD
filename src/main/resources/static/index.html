@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aluno Online</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <h1>Aluno Online</h1>
+        <p>CRUD academico e relatorios personalizados</p>
+    </div>
+    <nav class="tabs" aria-label="Navegacao principal">
+        <button class="tab active" data-view="crud">CRUD</button>
+        <button class="tab" data-view="relatorios">Relatorios</button>
+    </nav>
+</header>
+
+<main>
+    <section id="crud" class="view active">
+        <div class="toolbar">
+            <label>
+                Tabela
+                <select id="crud-resource"></select>
+            </label>
+            <button id="new-record" type="button">Novo registro</button>
+        </div>
+
+        <div class="grid-layout">
+            <form id="crud-form" class="panel">
+                <h2 id="form-title">Novo registro</h2>
+                <input type="hidden" id="record-id">
+                <div id="form-fields" class="fields"></div>
+                <div class="actions">
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="cancel-edit" class="secondary">Limpar</button>
+                </div>
+            </form>
+
+            <section class="panel table-panel">
+                <div class="panel-heading">
+                    <h2>Registros</h2>
+                    <button id="reload-records" type="button" class="secondary">Atualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead id="crud-head"></thead>
+                        <tbody id="crud-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <section id="relatorios" class="view">
+        <div class="grid-layout report-layout">
+            <form id="report-form" class="panel">
+                <h2>Relatorio personalizado</h2>
+                <label>
+                    Tabela
+                    <select id="report-table"></select>
+                </label>
+                <label>
+                    Pesquisa
+                    <input id="report-search" type="search" placeholder="Digite para filtrar">
+                </label>
+                <fieldset>
+                    <legend>Campos</legend>
+                    <div id="report-fields" class="checks"></div>
+                </fieldset>
+                <div class="actions">
+                    <button type="submit">Gerar</button>
+                    <button type="button" id="export-csv" class="secondary">Exportar CSV</button>
+                </div>
+            </form>
+
+            <section class="panel table-panel">
+                <div class="panel-heading">
+                    <h2>Resultado</h2>
+                    <span id="report-count" class="muted">0 linhas</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead id="report-head"></thead>
+                        <tbody id="report-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>

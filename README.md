@@ -216,6 +216,14 @@ Tambem foram implementadas as seguintes regras:
 
 ## Endpoints da API
 
+### Interface Web
+
+A aplicacao tambem possui uma tela interativa para executar o CRUD e gerar relatorios personalizados.
+
+| Rota | Descricao |
+| ---- | --------- |
+| `/` | Tela principal com CRUD e relatorios |
+
 ### Alunos
 
 | Metodo | Rota | Descricao |
@@ -251,9 +259,38 @@ Tambem foram implementadas as seguintes regras:
 | Metodo | Rota | Descricao |
 | ------ | ---- | --------- |
 | POST | `/matriculas` | Criar matricula |
+| GET | `/matriculas` | Listar todas as matriculas |
+| GET | `/matriculas/{id}` | Buscar matricula por ID |
+| PUT | `/matriculas/{id}` | Atualizar matricula |
+| DELETE | `/matriculas/{id}` | Deletar matricula |
 | PATCH | `/matriculas/trancar/{id}` | Trancar matricula |
 | PATCH | `/matriculas/atualizar-notas/{id}` | Atualizar notas da matricula |
 | GET | `/matriculas/emitir-historico/{alunoId}` | Emitir historico do aluno |
+
+### Relatorios Personalizados
+
+| Metodo | Rota | Descricao |
+| ------ | ---- | --------- |
+| GET | `/relatorios/metadados` | Lista as tabelas e campos disponiveis para relatorio |
+| POST | `/relatorios/gerar` | Gera um relatorio personalizado com tabela, campos e termo de busca |
+| POST | `/relatorios/exportar-csv` | Exporta o relatorio personalizado em CSV |
+
+Exemplo para gerar relatorio:
+
+```json
+{
+  "tabela": "matriculas",
+  "campos": ["aluno", "disciplina", "nota1", "nota2", "status"],
+  "termo": "aprovado"
+}
+```
+
+Tabelas disponiveis para relatorio:
+
+* `alunos`
+* `professores`
+* `disciplinas`
+* `matriculas`
 
 ---
 
@@ -453,6 +490,18 @@ mvnw.cmd spring-boot:run
 
 ```text
 http://localhost:8080/alunos
+```
+
+7. Acessar a tela interativa:
+
+```text
+http://localhost:8080
+```
+
+Observacao: o `pom.xml` esta configurado para Java 21. Caso o terminal esteja com Java 17, a compilacao pode ser validada com:
+
+```bash
+mvnw.cmd -DskipTests "-Djava.version=17" package
 ```
 
 ---
