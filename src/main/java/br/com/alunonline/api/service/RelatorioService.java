@@ -137,6 +137,7 @@ public class RelatorioService {
     private Map<String, TabelaRelatorio> criarTabelasPermitidas() {
         Map<String, TabelaRelatorio> mapa = new LinkedHashMap<>();
 
+        // TABELA 1: Alunos
         mapa.put("alunos", new TabelaRelatorio(
                 "alunos",
                 "Alunos",
@@ -148,6 +149,7 @@ public class RelatorioService {
                         campo("cpf", "a.cpf", "cpf", "CPF", true)
                 )));
 
+        // TABELA 2: Professores
         mapa.put("professores", new TabelaRelatorio(
                 "professores",
                 "Professores",
@@ -159,6 +161,7 @@ public class RelatorioService {
                         campo("cpf", "p.cpf", "cpf", "CPF", true)
                 )));
 
+        // TABELA 3: Disciplinas
         mapa.put("disciplinas", new TabelaRelatorio(
                 "disciplinas",
                 "Disciplinas",
@@ -170,6 +173,7 @@ public class RelatorioService {
                         campo("professor", "p.nome_completo", "professor", "Professor", true)
                 )));
 
+        // TABELA 4: Matrículas (com LEFT JOINs para relacionamentos)
         mapa.put("matriculas", new TabelaRelatorio(
                 "matriculas",
                 "Matriculas",
@@ -186,6 +190,52 @@ public class RelatorioService {
                         campo("nota2", "m.nota2", "nota2", "Nota 2", true),
                         campo("media", "(m.nota1 + m.nota2) / 2", "media", "Media", true),
                         campo("status", "m.status", "status", "Status", true)
+                )));
+
+        // TABELA 5: Histórico do Aluno (Usando VIEW)
+        // Esta tabela utiliza a VIEW vw_historico_aluno_completo criada no banco
+        mapa.put("historico_aluno", new TabelaRelatorio(
+                "historico_aluno",
+                "Histórico do Aluno",
+                "vw_historico_aluno_completo",
+                List.of(
+                        campo("aluno_id", "aluno_id", "aluno_id", "ID Aluno", true),
+                        campo("nome_completo", "nome_completo", "nome_completo", "Nome do Aluno", true),
+                        campo("disciplina", "disciplina", "disciplina", "Disciplina", true),
+                        campo("professor", "professor", "professor", "Professor", true),
+                        campo("nota1", "nota1", "nota1", "Nota 1", true),
+                        campo("nota2", "nota2", "nota2", "Nota 2", true),
+                        campo("media", "media", "media", "Média", true),
+                        campo("status", "status", "status", "Status", true)
+                )));
+
+        // TABELA 6: Matrículas Aprovadas (Usando VIEW)
+        // Esta tabela utiliza a VIEW vw_matriculas_aprovadas criada no banco
+        mapa.put("matriculas_aprovadas", new TabelaRelatorio(
+                "matriculas_aprovadas",
+                "Matrículas Aprovadas",
+                "vw_matriculas_aprovadas",
+                List.of(
+                        campo("aluno_nome", "aluno_nome", "aluno_nome", "Aluno", true),
+                        campo("disciplina_nome", "disciplina_nome", "disciplina_nome", "Disciplina", true),
+                        campo("professor_nome", "professor_nome", "professor_nome", "Professor", true),
+                        campo("media", "(nota1 + nota2) / 2", "media", "Média", true),
+                        campo("status", "status", "status", "Status", true)
+                )));
+
+        // TABELA 7: Desempenho por Disciplina (Usando VIEW com Aggregation)
+        // Utiliza a VIEW vw_relatorio_desempenho_disciplinas
+        mapa.put("desempenho_disciplinas", new TabelaRelatorio(
+                "desempenho_disciplinas",
+                "Desempenho por Disciplina",
+                "vw_relatorio_desempenho_disciplinas",
+                List.of(
+                        campo("disciplina", "disciplina", "disciplina", "Disciplina", true),
+                        campo("professor", "professor", "professor", "Professor", true),
+                        campo("total_matriculas", "total_matriculas", "total_matriculas", "Total de Alunos", true),
+                        campo("aprovados", "aprovados", "aprovados", "Aprovados", true),
+                        campo("reprovados", "reprovados", "reprovados", "Reprovados", true),
+                        campo("media_disciplina", "media_disciplina", "media_disciplina", "Média da Disciplina", true)
                 )));
 
         return mapa;
