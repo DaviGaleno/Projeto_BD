@@ -34,6 +34,7 @@ body {
 
 h1,
 h2,
+h3,
 p {
     margin: 0;
 }
@@ -44,6 +45,10 @@ h1 {
 
 h2 {
     font-size: 18px;
+}
+
+h3 {
+    font-size: 15px;
 }
 
 .topbar p {
@@ -210,6 +215,29 @@ legend {
     width: 100%;
     overflow-x: auto;
     margin-top: 14px;
+}
+
+.sql-card {
+    margin-top: 14px;
+    margin-bottom: 14px;
+    border: 1px solid #b9c7d8;
+    border-radius: 8px;
+    background: #f8fbff;
+    padding: 14px;
+}
+
+.sql-card pre {
+    margin: 10px 0 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.sql-card code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #10243a;
 }
 
 table {

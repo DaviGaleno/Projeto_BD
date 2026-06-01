@@ -3,6 +3,7 @@ package br.com.alunonline.api.service;
 import br.com.alunonline.api.dtos.AtualizarNotasRequestDTO;
 import br.com.alunonline.api.dtos.DisciplinasAlunoResponseDTO;
 import br.com.alunonline.api.dtos.HistoricoAlunoResponseDTO;
+import br.com.alunonline.api.dtos.OperacaoSqlResponseDTO;
 import br.com.alunonline.api.enums.MatriculaAlunoStatusEnum;
 import br.com.alunonline.api.model.Aluno;
 import br.com.alunonline.api.model.MatriculaAluno;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,12 +34,13 @@ public class MatriculaAlunoService {
         return matriculaAlunoRepository.findById(id);
     }
 
-    public void criarMatricula(MatriculaAluno matriculaAluno) {
+    public OperacaoSqlResponseDTO criarMatricula(MatriculaAluno matriculaAluno) {
         matriculaAluno.setStatus(MatriculaAlunoStatusEnum.MATRICULADO);
         matriculaAlunoRepository.save(matriculaAluno);
+        return new OperacaoSqlResponseDTO(SqlCrudFormatter.insert("matricula_aluno", valoresMatricula(matriculaAluno)));
     }
 
-    public void atualizarMatriculaPorId(Long id, MatriculaAluno matriculaEditada) {
+    public OperacaoSqlResponseDTO atualizarMatriculaPorId(Long id, MatriculaAluno matriculaEditada) {
         MatriculaAluno matriculaAtual = matriculaAlunoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Matricula nao encontrada"));
@@ -46,10 +50,12 @@ public class MatriculaAlunoService {
             matriculaEditada.setStatus(matriculaAtual.getStatus());
         }
         matriculaAlunoRepository.save(matriculaEditada);
+        return new OperacaoSqlResponseDTO(SqlCrudFormatter.update("matricula_aluno", valoresMatricula(matriculaEditada), id));
     }
 
-    public void deletarMatriculaPorId(Long id) {
+    public OperacaoSqlResponseDTO deletarMatriculaPorId(Long id) {
         matriculaAlunoRepository.deleteById(id);
+        return new OperacaoSqlResponseDTO(SqlCrudFormatter.delete("matricula_aluno", id));
     }
 
     public void trancarMatricula(Long id) {
@@ -115,5 +121,15 @@ public class MatriculaAlunoService {
         historico.setCpfAluno(aluno.getCpf());
         historico.setDisciplinas(disciplinas);
         return historico;
+    }
+
+    private Map<String, Object> valoresMatricula(MatriculaAluno matricula) {
+        Map<String, Object> valores = new LinkedHashMap<>();
+        valores.put("aluno_id", matricula.getAluno() == null ? null : matricula.getAluno().getId());
+        valores.put("disciplina_id", matricula.getDisciplina() == null ? null : matricula.getDisciplina().getId());
+        valores.put("nota1", matricula.getNota1());
+        valores.put("nota2", matricula.getNota2());
+        valores.put("status", matricula.getStatus());
+        return valores;
     }
 }

@@ -1,5 +1,6 @@
 package br.com.alunonline.api.controller;
 
+import br.com.alunonline.api.dtos.OperacaoSqlResponseDTO;
 import br.com.alunonline.api.model.Disciplina;
 import br.com.alunonline.api.service.DisciplinaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class DisciplinaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarDisciplina(@RequestBody Disciplina disciplina){
-        disciplinaService.criarDisciplina(disciplina);
+    public OperacaoSqlResponseDTO criarDisciplina(@RequestBody Disciplina disciplina){
+        return disciplinaService.criarDisciplina(disciplina);
     }
 
     @GetMapping
@@ -35,14 +36,14 @@ public class DisciplinaController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarDisciplinaPorId(@PathVariable Long id){
-        disciplinaService.deletarDisciplinaPorId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO deletarDisciplinaPorId(@PathVariable Long id){
+        return disciplinaService.deletarDisciplinaPorId(id);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizarDisciplinaPorId(@PathVariable Long id, @RequestBody Disciplina disciplinaEditada){
-        disciplinaService.atualizarDisciplinaPorId(id, disciplinaEditada);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO atualizarDisciplinaPorId(@PathVariable Long id, @RequestBody Disciplina disciplinaEditada){
+        return disciplinaService.atualizarDisciplinaPorId(id, disciplinaEditada);
     }
 }

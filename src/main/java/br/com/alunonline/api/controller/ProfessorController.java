@@ -1,8 +1,7 @@
 package br.com.alunonline.api.controller;
 
-import br.com.alunonline.api.model.Aluno;
+import br.com.alunonline.api.dtos.OperacaoSqlResponseDTO;
 import br.com.alunonline.api.model.Professor;
-import br.com.alunonline.api.service.AlunoService;
 import br.com.alunonline.api.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,8 @@ public class ProfessorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarProfessor(@RequestBody Professor professor) {
-        professorService.criarProfessor(professor);
+    public OperacaoSqlResponseDTO criarProfessor(@RequestBody Professor professor) {
+        return professorService.criarProfessor(professor);
     }
 
     @GetMapping
@@ -37,14 +36,14 @@ public class ProfessorController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarProfessorPorId(@PathVariable Long id){
-        professorService.deletarProfessorPorId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO deletarProfessorPorId(@PathVariable Long id){
+        return professorService.deletarProfessorPorId(id);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizarProfessorPorId(@PathVariable Long id, @RequestBody Professor professorEditado){
-        professorService.atualizarProfessorPorId(id, professorEditado);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO atualizarProfessorPorId(@PathVariable Long id, @RequestBody Professor professorEditado){
+        return professorService.atualizarProfessorPorId(id, professorEditado);
     }
 }

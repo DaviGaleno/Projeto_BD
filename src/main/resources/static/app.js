@@ -106,12 +106,16 @@ const recordId = document.querySelector("#record-id");
 const formTitle = document.querySelector("#form-title");
 const crudHead = document.querySelector("#crud-head");
 const crudBody = document.querySelector("#crud-body");
+const crudSql = document.querySelector("#crud-sql");
+const crudSqlCode = document.querySelector("#crud-sql-code");
 const reportTable = document.querySelector("#report-table");
 const reportFields = document.querySelector("#report-fields");
 const reportForm = document.querySelector("#report-form");
 const reportHead = document.querySelector("#report-head");
 const reportBody = document.querySelector("#report-body");
 const reportCount = document.querySelector("#report-count");
+const generatedSql = document.querySelector("#generated-sql");
+const generatedSqlCode = document.querySelector("#generated-sql-code");
 const toast = document.querySelector("#toast");
 
 document.querySelectorAll(".tab").forEach(tab => {
@@ -131,6 +135,7 @@ crudResource.addEventListener("change", () => {
     activeResource = crudResource.value;
     renderForm();
     resetForm();
+    renderCrudSql(null);
     loadRecords();
 });
 
@@ -142,12 +147,13 @@ crudForm.addEventListener("submit", async event => {
     const method = id ? "PUT" : "POST";
     const url = id ? `${config.endpoint}/${id}` : config.endpoint;
 
-    await api(url, {
+    const response = await api(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config.buildPayload(values))
     });
 
+    renderCrudSql(response?.sql);
     notify(id ? "Registro atualizado." : "Registro criado.");
     resetForm();
     loadRecords();
@@ -241,7 +247,8 @@ function editRecord(record) {
 async function deleteRecord(id) {
     const config = resources[activeResource];
     if (!confirm("Deseja excluir este registro?")) return;
-    await api(`${config.endpoint}/${id}`, { method: "DELETE" });
+    const response = await api(`${config.endpoint}/${id}`, { method: "DELETE" });
+    renderCrudSql(response?.sql);
     notify("Registro excluido.");
     resetForm();
     loadRecords();
@@ -251,6 +258,11 @@ function resetForm() {
     crudForm.reset();
     recordId.value = "";
     formTitle.textContent = `Novo ${resources[activeResource].label}`;
+}
+
+function renderCrudSql(sql) {
+    crudSql.hidden = !sql;
+    crudSqlCode.textContent = sql ?? "";
 }
 
 function readFormValues(fields) {
@@ -291,7 +303,12 @@ async function generateReport() {
 function renderReport(report) {
     reportHead.innerHTML = `<tr>${report.cabecalhos.map(header => `<th>${header}</th>`).join("")}</tr>`;
     reportBody.innerHTML = "";
-    report.linhas.forEach(row => {
+    const rows = report.dados ?? report.linhas ?? [];
+
+    generatedSql.hidden = !report.sql;
+    generatedSqlCode.textContent = report.sql ?? "";
+
+    rows.forEach(row => {
         const tr = document.createElement("tr");
         Object.values(row).forEach(value => {
             const td = document.createElement("td");
@@ -300,7 +317,7 @@ function renderReport(report) {
         });
         reportBody.append(tr);
     });
-    reportCount.textContent = `${report.linhas.length} linhas`;
+    reportCount.textContent = `${rows.length} linhas`;
 }
 
 async function exportCsv() {
@@ -342,7 +359,9 @@ async function api(url, options = {}) {
     if (response.status === 204) {
         return null;
     }
-    return response.json();
+
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 }
 
 function valueByPath(object, path) {

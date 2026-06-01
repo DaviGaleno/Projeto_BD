@@ -2,6 +2,7 @@ package br.com.alunonline.api.controller;
 
 import br.com.alunonline.api.dtos.AtualizarNotasRequestDTO;
 import br.com.alunonline.api.dtos.HistoricoAlunoResponseDTO;
+import br.com.alunonline.api.dtos.OperacaoSqlResponseDTO;
 import br.com.alunonline.api.model.MatriculaAluno;
 import br.com.alunonline.api.service.MatriculaAlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +33,21 @@ public class MatriculaAlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarMatricula(@RequestBody MatriculaAluno m) {
-        matriculaAlunoService.criarMatricula(m);
+    public OperacaoSqlResponseDTO criarMatricula(@RequestBody MatriculaAluno m) {
+        return matriculaAlunoService.criarMatricula(m);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizarMatriculaPorId(@PathVariable Long id,
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO atualizarMatriculaPorId(@PathVariable Long id,
                                          @RequestBody MatriculaAluno matriculaEditada) {
-        matriculaAlunoService.atualizarMatriculaPorId(id, matriculaEditada);
+        return matriculaAlunoService.atualizarMatriculaPorId(id, matriculaEditada);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarMatriculaPorId(@PathVariable Long id) {
-        matriculaAlunoService.deletarMatriculaPorId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO deletarMatriculaPorId(@PathVariable Long id) {
+        return matriculaAlunoService.deletarMatriculaPorId(id);
     }
 
     @PatchMapping("/trancar/{id}")

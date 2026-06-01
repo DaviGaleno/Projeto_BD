@@ -1,5 +1,6 @@
 package br.com.alunonline.api.controller;
 
+import br.com.alunonline.api.dtos.OperacaoSqlResponseDTO;
 import br.com.alunonline.api.model.Aluno;
 import br.com.alunonline.api.service.AlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class AlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarAluno(@RequestBody Aluno aluno) {
-        alunoService.criarAluno(aluno);
+    public OperacaoSqlResponseDTO criarAluno(@RequestBody Aluno aluno) {
+        return alunoService.criarAluno(aluno);
     }
 
     @GetMapping
@@ -35,14 +36,14 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarAlunoPorId(@PathVariable Long id){
-        alunoService.deletarAlunoPorId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO deletarAlunoPorId(@PathVariable Long id){
+        return alunoService.deletarAlunoPorId(id);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizarAlunoPorId(@PathVariable Long id, @RequestBody Aluno alunoEditado){
-        alunoService.atualizarAlunoPorId(id, alunoEditado);
+    @ResponseStatus(HttpStatus.OK)
+    public OperacaoSqlResponseDTO atualizarAlunoPorId(@PathVariable Long id, @RequestBody Aluno alunoEditado){
+        return alunoService.atualizarAlunoPorId(id, alunoEditado);
     }
 }

@@ -1,419 +1,371 @@
-# 📚 PROJETO DE BANCO DE DADOS - API Java Spring Boot
+# Projeto de Banco de Dados - Aluno Online
 
-## 📌 Descrição do Projeto
+Este projeto foi desenvolvido como trabalho academico de Banco de Dados. O foco principal nao e apenas criar uma API CRUD, mas demonstrar na pratica conceitos relacionais usando PostgreSQL, Spring Boot e uma interface web que evidencia as consultas SQL geradas.
 
-Este projeto é um **trabalho acadêmico de Banco de Dados** que demonstra a aplicação prática de conceitos fundamentais de gerenciamento de dados através de uma API REST desenvolvida com Spring Boot.
+O sistema gerencia alunos, professores, disciplinas e matriculas, aplicando operacoes SQL de `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `JOIN`, `WHERE`, `VIEW` e `SUBQUERY`.
 
-O sistema gerencia dados de **Alunos**, **Professores**, **Disciplinas** e **Matrículas**, implementando operações completas de CRUD (Create, Read, Update e Delete) com validações e regras de negócio complexas.
+## Objetivo do Projeto
 
-O projeto segue boas práticas de organização em camadas, separando responsabilidades entre Controller, Service, Repository, Model, DTO e implementa conceitos avançados de banco de dados como **Views SQL** e **Subqueries**.
+Demonstrar como um sistema real utiliza Banco de Dados relacional para:
 
----
+- Modelar entidades e relacionamentos.
+- Criar chaves primarias e estrangeiras.
+- Executar CRUD completo.
+- Consultar dados com `JOIN`.
+- Filtrar dados com `WHERE`.
+- Criar relatorios personalizados.
+- Utilizar `VIEW` para consultas prontas.
+- Utilizar `SUBQUERY` para consultas mais avancadas.
+- Exibir no frontend a SQL usada nas operacoes principais.
 
-## 🎓 Conceitos de Banco de Dados Utilizados
+## Tecnologias
 
-### ✅ **Views SQL** (Obrigatório)
-As Views foram implementadas para fornecer consultas pré-compiladas e otimizadas:
+- Java 21
+- Spring Boot
+- Spring Data JPA
+- PostgreSQL
+- Maven
+- HTML, CSS e JavaScript puro
 
-- **View `historico_aluno_completo`**: Retorna o histórico de cada aluno com disciplinas, notas e professores
-- **View `matriculas_aprovadas`**: Filtra matrículas com status APROVADO
-- **View `relatorio_desempenho_disciplinas`**: Agrupa dados de desempenho por disciplina
+## Modelo Relacional
 
-Localização: `src/main/resources/db/views.sql`
+O banco possui quatro tabelas principais:
 
-**Benefícios das Views utilizadas:**
-- Simplificação de queries complexas
-- Reutilização de lógica de consulta
-- Melhor performance em operações repetidas
-- Abstração de dados sensíveis
+### Tabela `aluno`
 
-### ✅ **Subqueries (Subconsultas)**
-Implementadas para consultas aninhadas avançadas:
+Armazena os dados dos alunos.
 
-- Buscar alunos que estão matriculados em mais de 3 disciplinas
-- Listar disciplinas com média geral acima da média total
-- Filtros dinâmicos nos endpoints de relatório
-
-Localização: `src/main/java/com/projeto/repository/`
-
-**Exemplo de uso:**
-```sql
-SELECT * FROM alunos 
-WHERE id IN (
-    SELECT aluno_id FROM matricula_aluno 
-    GROUP BY aluno_id 
-    HAVING COUNT(*) > 3
-)
-```
-
-### 📊 **Joins e Relacionamentos**
-- **INNER JOIN**: Matrículas com Alunos e Disciplinas
-- **LEFT JOIN**: Disciplinas sem professor associado
-- **Foreign Keys**: Integridade referencial entre tabelas
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Java 21** - Linguagem de programação
-* **Spring Boot 4.0.4** - Framework web
-* **Spring Data JPA** - ORM para persistência
-* **PostgreSQL** - Banco de dados relacional
-* **Maven** - Gerenciador de dependências
-* **Lombok** - Redução de boilerplate
-* **Insomnia** - Testes de API
-* **DBeaver** - Visualização e gerenciamento do banco de dados
-
----
-
-## 🗄️ Arquitetura do Banco de Dados
-
-### 📋 Tabelas Principais
-
-```
-┌─────────────────┐
-│      ALUNO      │
-├─────────────────┤
-│ id (PK)         │
-│ nome_completo   │
-│ email           │
-│ cpf             │
-└─────────────────┘
-         │
-         │ 1:N
-         │
-┌─────────────────────────┐
-│   MATRICULA_ALUNO       │
-├─────────────────────────┤
-│ id (PK)                 │
-│ aluno_id (FK)           │
-│ disciplina_id (FK)      │
-│ nota1                   │
-│ nota2                   │
-│ status                  │
-└─────────────────────────┘
-         │
-         │ N:1
-         │
-┌─────────────────┐
-│   DISCIPLINA    │
-├─────────────────┤
-│ id (PK)         │
-│ nome            │
-│ carga_horaria   │
-│ professor_id(FK)│
-└─────────────────┘
-         │
-         │ N:1
-         │
-┌─────────────────┐
-│   PROFESSOR     │
-├─────────────────┤
-│ id (PK)         │
-│ nome_completo   │
-│ email           │
-│ cpf             │
-└─────────────────┘
-```
-
-### 🔗 Relacionamentos
-
-| Relacionamento | Tipo | Descrição |
+| Campo | Tipo esperado | Descricao |
 |---|---|---|
-| Aluno ↔ Matrícula | 1:N | Um aluno possui várias matrículas |
-| Professor ↔ Disciplina | 1:N | Um professor leciona várias disciplinas |
-| Disciplina ↔ Matrícula | 1:N | Uma disciplina possui várias matrículas |
+| `id` | BIGINT | Chave primaria |
+| `nome_completo` | VARCHAR | Nome do aluno |
+| `email` | VARCHAR | E-mail do aluno |
+| `cpf` | VARCHAR | CPF do aluno |
 
----
+### Tabela `professor`
 
-## 🧱 Arquitetura do Projeto
+Armazena os dados dos professores.
 
-O projeto segue o padrão de arquitetura em camadas:
+| Campo | Tipo esperado | Descricao |
+|---|---|---|
+| `id` | BIGINT | Chave primaria |
+| `nome_completo` | VARCHAR | Nome do professor |
+| `email` | VARCHAR | E-mail do professor |
+| `cpf` | VARCHAR | CPF do professor |
 
-### 📂 Model (Entidades)
-Representa as tabelas do banco de dados com mapeamento JPA.
+### Tabela `disciplina`
 
-**Exemplo - Entidade Matrícula:**
-```java
-@Entity
-@Table(name = "matricula_aluno")
-public class MatriculaAluno {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+Armazena as disciplinas e liga cada disciplina a um professor.
 
-    @ManyToOne
-    @JoinColumn(name = "aluno_id")
-    private Aluno aluno;
+| Campo | Tipo esperado | Descricao |
+|---|---|---|
+| `id` | BIGINT | Chave primaria |
+| `nome` | VARCHAR | Nome da disciplina |
+| `carga_horaria` | INTEGER | Carga horaria |
+| `professor_id` | BIGINT | Chave estrangeira para `professor.id` |
 
-    @ManyToOne
-    @JoinColumn(name = "disciplina_id")
-    private Disciplina disciplina;
+### Tabela `matricula_aluno`
 
-    @Enumerated(EnumType.STRING)
-    private MatriculaAlunoStatusEnum status;
+Representa a matricula de um aluno em uma disciplina.
+
+| Campo | Tipo esperado | Descricao |
+|---|---|---|
+| `id` | BIGINT | Chave primaria |
+| `aluno_id` | BIGINT | Chave estrangeira para `aluno.id` |
+| `disciplina_id` | BIGINT | Chave estrangeira para `disciplina.id` |
+| `nota1` | DOUBLE PRECISION | Primeira nota |
+| `nota2` | DOUBLE PRECISION | Segunda nota |
+| `status` | VARCHAR | Situacao da matricula |
+
+## Relacionamentos
+
+O projeto utiliza relacionamentos relacionais com chaves estrangeiras:
+
+| Relacionamento | Tipo | Explicacao |
+|---|---|---|
+| `professor` -> `disciplina` | 1:N | Um professor pode lecionar varias disciplinas |
+| `aluno` -> `matricula_aluno` | 1:N | Um aluno pode ter varias matriculas |
+| `disciplina` -> `matricula_aluno` | 1:N | Uma disciplina pode ter varios alunos matriculados |
+
+Na pratica, a tabela `matricula_aluno` funciona como a ligacao entre alunos e disciplinas.
+
+## Conceitos de Banco de Dados Implementados
+
+### CRUD com SQL
+
+O sistema executa as operacoes principais de banco:
+
+```sql
+INSERT INTO aluno (nome_completo, email, cpf)
+VALUES ('Maria Souza', 'maria@email.com', '12345678900');
+```
+
+```sql
+UPDATE aluno
+SET nome_completo = 'Maria Silva',
+    email = 'maria@email.com',
+    cpf = '12345678900'
+WHERE id = 1;
+```
+
+```sql
+DELETE FROM aluno
+WHERE id = 1;
+```
+
+```sql
+SELECT *
+FROM aluno;
+```
+
+### JOIN
+
+Os relatorios usam `JOIN` para combinar dados de varias tabelas.
+
+Exemplo:
+
+```sql
+SELECT
+    a.nome_completo AS aluno,
+    d.nome AS disciplina,
+    p.nome_completo AS professor,
+    m.nota1,
+    m.nota2,
+    m.status
+FROM matricula_aluno m
+LEFT JOIN aluno a ON a.id = m.aluno_id
+LEFT JOIN disciplina d ON d.id = m.disciplina_id
+LEFT JOIN professor p ON p.id = d.professor_id;
+```
+
+### WHERE
+
+Os filtros dos relatorios usam `WHERE` para pesquisar valores informados pelo usuario.
+
+Exemplo:
+
+```sql
+SELECT
+    a.nome_completo,
+    a.email
+FROM aluno a
+WHERE LOWER(CAST(a.nome_completo AS TEXT)) LIKE '%maria%';
+```
+
+### VIEW
+
+As views estao em:
+
+```text
+src/main/resources/db/views.sql
+```
+
+Views implementadas:
+
+| View | Finalidade |
+|---|---|
+| `vw_historico_aluno_completo` | Mostra historico completo do aluno com disciplina, professor, notas, media e status |
+| `vw_matriculas_aprovadas` | Mostra apenas matriculas aprovadas |
+| `vw_relatorio_desempenho_disciplinas` | Mostra desempenho por disciplina, com totais, aprovados, reprovados e media |
+
+Exemplo de uso:
+
+```sql
+SELECT *
+FROM vw_historico_aluno_completo;
+```
+
+### SUBQUERY
+
+As subqueries de exemplo estao em:
+
+```text
+src/main/resources/db/subqueries.sql
+```
+
+Elas demonstram consultas com `IN`, `NOT EXISTS`, `HAVING` e subconsultas dentro de agregacoes.
+
+Exemplo:
+
+```sql
+SELECT
+    a.id,
+    a.nome_completo,
+    COUNT(ma.id) AS total_matriculas
+FROM aluno a
+INNER JOIN matricula_aluno ma ON a.id = ma.aluno_id
+WHERE a.id IN (
+    SELECT aluno_id
+    FROM matricula_aluno
+    GROUP BY aluno_id
+)
+GROUP BY a.id, a.nome_completo;
+```
+
+## Relatorios Personalizados
+
+O sistema possui uma tela de relatorios onde o usuario escolhe:
+
+- A origem dos dados.
+- Os campos desejados.
+- Um termo de pesquisa opcional.
+
+O backend monta uma consulta SQL dinamica e retorna:
+
+```json
+{
+  "sql": "SELECT ... FROM ... WHERE ...;",
+  "cabecalhos": ["Aluno", "Disciplina", "Status"],
+  "dados": [
+    {
+      "aluno": "Maria Souza",
+      "disciplina": "Banco de Dados",
+      "status": "APROVADO"
+    }
+  ]
 }
 ```
 
-### 📂 Repository
-Responsável pela comunicação com o banco usando Spring Data JPA.
+A tabela de resultados continua sendo exibida normalmente, mas agora o SQL usado para gerar o relatorio tambem aparece acima dos dados.
 
-Implements queries customizadas com `@Query` para Views:
-```java
-@Query(value = "SELECT * FROM historico_aluno_completo WHERE aluno_id = ?1", nativeQuery = true)
-List<HistoricoAlunoView> buscarHistoricoAluno(Long alunoId);
+## Exibicao do SQL no Frontend
+
+Como o projeto e focado em Banco de Dados, a interface exibe a SQL gerada nas operacoes principais.
+
+### Na aba CRUD
+
+Ao criar, editar ou excluir registros, o frontend mostra o SQL equivalente:
+
+- `INSERT` ao criar.
+- `UPDATE` ao editar.
+- `DELETE` ao excluir.
+
+Exemplo de resposta da API:
+
+```json
+{
+  "sql": "DELETE FROM aluno\nWHERE id = 1;"
+}
 ```
 
-### 📂 Service
-Contém a lógica de negócio e regras de validação.
+### Na aba Relatorios
 
-**Regras implementadas:**
-- Cálculo automático de média quando ambas as notas são preenchidas
-- Atualização automática de status baseado na média
-- Validação de status para trancar matrícula
+Ao gerar um relatorio, o frontend mostra o `SELECT` completo utilizado, incluindo `JOIN`, `WHERE`, `ORDER BY` e `LIMIT` quando aplicavel.
 
-### 📂 Controller
-Expõe os endpoints da API REST.
+O bloco aparece como codigo, preservando quebras de linha para facilitar a leitura.
 
----
+## Endpoints Principais
 
-## 📊 Dados e Consultas de Exemplo
+### CRUD
 
-### Exemplo de View - Histórico do Aluno
+| Metodo | Rota | Funcao |
+|---|---|---|
+| `GET` | `/alunos` | Listar alunos |
+| `POST` | `/alunos` | Criar aluno e retornar SQL |
+| `PUT` | `/alunos/{id}` | Atualizar aluno e retornar SQL |
+| `DELETE` | `/alunos/{id}` | Excluir aluno e retornar SQL |
+| `GET` | `/professores` | Listar professores |
+| `POST` | `/professores` | Criar professor e retornar SQL |
+| `PUT` | `/professores/{id}` | Atualizar professor e retornar SQL |
+| `DELETE` | `/professores/{id}` | Excluir professor e retornar SQL |
+| `GET` | `/disciplinas` | Listar disciplinas |
+| `POST` | `/disciplinas` | Criar disciplina e retornar SQL |
+| `PUT` | `/disciplinas/{id}` | Atualizar disciplina e retornar SQL |
+| `DELETE` | `/disciplinas/{id}` | Excluir disciplina e retornar SQL |
+| `GET` | `/matriculas` | Listar matriculas |
+| `POST` | `/matriculas` | Criar matricula e retornar SQL |
+| `PUT` | `/matriculas/{id}` | Atualizar matricula e retornar SQL |
+| `DELETE` | `/matriculas/{id}` | Excluir matricula e retornar SQL |
 
-```sql
-CREATE VIEW historico_aluno_completo AS
-SELECT 
-    a.id as aluno_id,
-    a.nome_completo,
-    a.email,
-    d.nome as disciplina,
-    p.nome_completo as professor,
-    ma.nota1,
-    ma.nota2,
-    ROUND((ma.nota1 + ma.nota2) / 2, 2) as media,
-    ma.status
-FROM alunos a
-INNER JOIN matricula_aluno ma ON a.id = ma.aluno_id
-INNER JOIN disciplina d ON ma.disciplina_id = d.id
-INNER JOIN professor p ON d.professor_id = p.id
-ORDER BY a.nome_completo, d.nome;
+### Relatorios
+
+| Metodo | Rota | Funcao |
+|---|---|---|
+| `GET` | `/relatorios/metadados` | Lista tabelas e campos disponiveis para relatorio |
+| `POST` | `/relatorios/gerar` | Gera relatorio e retorna SQL + dados |
+| `POST` | `/relatorios/exportar-csv` | Exporta relatorio em CSV |
+
+## Estrutura Relevante do Projeto
+
+```text
+src/main/java/br/com/alunonline/api/
+|-- controller/       Controllers REST
+|-- dtos/             Objetos de entrada e resposta
+|-- model/            Entidades JPA
+|-- repository/       Repositorios Spring Data JPA
+|-- service/          Regras de negocio e montagem de SQL
+
+src/main/resources/
+|-- application.properties
+|-- db/
+|   |-- views.sql
+|   |-- subqueries.sql
+|-- static/
+|   |-- index.html
+|   |-- app.js
+|   |-- styles.css
 ```
 
-### Exemplo de Subquery - Alunos com Múltiplas Matrículas
+## Como Executar
 
-```sql
-SELECT a.nome_completo, COUNT(ma.id) as total_matriculas
-FROM alunos a
-INNER JOIN matricula_aluno ma ON a.id = ma.aluno_id
-GROUP BY a.id
-HAVING COUNT(ma.id) > (
-    SELECT AVG(matriculas_por_aluno)
-    FROM (
-        SELECT COUNT(*) as matriculas_por_aluno
-        FROM matricula_aluno
-        GROUP BY aluno_id
-    ) subquery
-);
-```
+### 1. Criar o banco PostgreSQL
 
----
-
-## 🔗 Endpoints da API
-
-### Alunos
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/alunos` | Criar aluno |
-| GET | `/alunos` | Listar todos os alunos |
-| GET | `/alunos/{id}` | Buscar aluno por ID |
-| PUT | `/alunos/{id}` | Atualizar aluno |
-| DELETE | `/alunos/{id}` | Deletar aluno |
-
-### Professores
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/professores` | Criar professor |
-| GET | `/professores` | Listar todos os professores |
-| GET | `/professores/{id}` | Buscar professor por ID |
-| PUT | `/professores/{id}` | Atualizar professor |
-| DELETE | `/professores/{id}` | Deletar professor |
-
-### Disciplinas
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/disciplinas` | Criar disciplina |
-| GET | `/disciplinas` | Listar todas as disciplinas |
-| GET | `/disciplinas/{id}` | Buscar disciplina por ID |
-| PUT | `/disciplinas/{id}` | Atualizar disciplina |
-| DELETE | `/disciplinas/{id}` | Deletar disciplina |
-
-### Matrículas
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/matriculas` | Criar matrícula |
-| GET | `/matriculas` | Listar todas as matrículas |
-| GET | `/matriculas/{id}` | Buscar matrícula por ID |
-| PUT | `/matriculas/{id}` | Atualizar matrícula |
-| DELETE | `/matriculas/{id}` | Deletar matrícula |
-| PATCH | `/matriculas/trancar/{id}` | Trancar matrícula |
-| PATCH | `/matriculas/atualizar-notas/{id}` | Atualizar notas |
-| GET | `/matriculas/emitir-historico/{alunoId}` | Emitir histórico (utiliza VIEW) |
-
-### Relatórios Personalizados
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/relatorios/metadados` | Lista as tabelas disponíveis |
-| POST | `/relatorios/gerar` | Gera relatório com subqueries |
-| POST | `/relatorios/exportar-csv` | Exporta relatório em CSV |
-
----
-
-## 🔐 Regras de Negócio
-
-1. **Status de Matrícula**: MATRICULADO → APROVADO/REPROVADO
-2. **Cálculo de Média**: `(nota1 + nota2) / 2`
-3. **Aprovação**: Média ≥ 7.0
-4. **Trancar Matrícula**: Apenas em status MATRICULADO
-5. **Integridade Referencial**: Cascata de deleção configurada
-
----
-
-## ▶️ Como Executar o Projeto
-
-### Pré-requisitos
-- Java 21 ou superior
-- PostgreSQL instalado e rodando
-- Maven instalado
-
-### Passo a Passo
-
-1. **Clonar o repositório:**
-```bash
-git clone https://github.com/DaviGaleno/Projeto_BD.git
-cd Projeto_BD
-```
-
-2. **Criar o banco de dados:**
 ```sql
 CREATE DATABASE aluno_online;
 ```
 
-3. **Configurar credenciais em `application.properties`:**
+### 2. Configurar acesso ao banco
+
+Arquivo:
+
+```text
+src/main/resources/application.properties
+```
+
+Exemplo:
+
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/aluno_online
 spring.datasource.username=postgres
-spring.datasource.password=sua_senha
+spring.datasource.password=123
+spring.jpa.hibernate.ddl-auto=update
+server.port=8081
 ```
 
-4. **Executar o projeto:**
-```bash
-./mvnw spring-boot:run
+### 3. Rodar o projeto
+
+Na raiz do projeto:
+
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
----
+### 4. Abrir o frontend
 
-## 🌐 Acessar a Aplicação
-
-### Frontend + API Integrados
-
-A aplicaç��o **integra automaticamente o frontend e a API** na mesma aplicação Spring Boot!
-
-```
-┌─────────────────────────────────┐
-│  Spring Boot (Porta 8081)       │
-│  ├─ API REST (/alunos, etc)     │
-│  └─ Servidor de Arquivos        │
-│     └─ static/ ✅               │
-│        ├─ index.html            │
-│        ├─ app.js                │
-│        └─ styles.css            │
-└─────────────────────────────────┘
-```
-
-### 📍 Acessar a Interface Web
-
-Após o Spring Boot iniciar, simplesmente abra no navegador:
-
-```
+```text
 http://localhost:8081
 ```
 
-**OU**
+ou:
 
-```
+```text
 http://localhost:8081/index.html
 ```
 
-### ✅ O que você verá:
+## Observacao Sobre o SQL Exibido
 
-- Interface CRUD completa com **2 abas**:
-  - **CRUD**: Gerenciar Alunos, Professores, Disciplinas e Matrículas
-  - **Relatórios**: Gerar relatórios personalizados e exportar em CSV
-- Formulários para criar, editar e deletar registros
-- Tabelas dinâmicas com dados do banco
-- Integração perfeita com a API (sem CORS, mesma origem)
+As operacoes CRUD usam Spring Data JPA/Hibernate para persistir no banco. O SQL exibido na tela representa a operacao SQL equivalente (`INSERT`, `UPDATE` ou `DELETE`) com os valores informados pelo usuario.
 
-### 🔍 Arquivos do Frontend
+Nos relatorios personalizados, a SQL exibida e a consulta montada pelo `RelatorioService` e enviada ao banco via `JdbcTemplate`.
 
-Os arquivos do frontend estão em:
-```
-src/main/resources/static/
-├── index.html       # Página principal
-├── app.js           # Lógica JavaScript (requisições API)
-└── styles.css       # Estilos CSS
-```
+## Resultado Esperado
 
-**Por que funciona assim?** Spring Boot serve automaticamente arquivos da pasta `static/` como conteúdo estático. Perfeito para aplicações integradas!
+Ao usar o sistema, o usuario consegue visualizar:
 
----
+- Os dados armazenados no PostgreSQL.
+- As relacoes entre tabelas.
+- Os comandos SQL das operacoes CRUD.
+- As consultas SQL dos relatorios.
+- O uso pratico de `JOIN`, `WHERE`, `VIEW` e `SUBQUERY`.
 
-## 📱 Testes via API (Opcional)
-
-Se preferir testar apenas a API (sem frontend), use **Insomnia** ou **Postman**:
-
-```
-URL Base: http://localhost:8081
-```
-
-**Exemplo - Listar Alunos:**
-```bash
-curl -X GET http://localhost:8081/alunos
-```
-
----
-
-## 🎯 Conceitos de Banco de Dados Aplicados
-
-| Conceito | Onde foi utilizado | Arquivo/Classe |
-|----------|-------------------|-----------------|
-| **Views** ✅ | Histórico do aluno, Relatórios | `resources/db/views.sql`, `HistoricoAlunoResponseDTO` |
-| **Subqueries** | Filtros dinâmicos, Relatórios personalizados | `RelatorioService`, `RelatorioController` |
-| **Foreign Keys** | Relacionamentos entre tabelas | `Disciplina.java`, `MatriculaAluno.java` |
-| **JOINS** | Consultas complexas | Repository custom queries |
-| **Índices** | Performance | Auto-criados em PK e FK |
-| **Triggers** | Atualização de status | Procedimentos armazenados (opcional) |
-| **Procedures** | Operações em batch | `src/main/resources/db/procedures.sql` |
-
----
-
-## 📚 Considerações Finais
-
-Este projeto demonstra a aplicação integrada de:
-
-✅ Conceitos fundamentais de Banco de Dados (Views, Subqueries, Joins)
-✅ Modelagem relacional com normalização
-✅ Persistência com Spring Data JPA
-✅ Arquitetura em camadas
-✅ RESTful API design
-✅ Regras de negócio complexas
-✅ Validação e integridade de dados
-✅ Frontend integrado com Backend (sem servidor externo necessário)
-
-O projeto foi desenvolvido como exercício acadêmico para consolidar conhecimentos em Banco de Dados, demonstrando como conceitos teóricos são aplicados em uma aplicação prática e profissional.
-
----
-
-**Autor:** Davi Galeno  
-**Data:** Maio 2026  
-**Disciplina:** Banco de Dados
+Assim, o projeto apresenta a aplicacao de conceitos fundamentais de Banco de Dados em um sistema funcional com backend, frontend e PostgreSQL.

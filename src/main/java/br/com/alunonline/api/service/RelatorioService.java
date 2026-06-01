@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 @Service
 public class RelatorioService {
@@ -46,34 +47,35 @@ public class RelatorioService {
 
         String select = montarSelect(camposSelecionados);
         StringBuilder sql = new StringBuilder()
-                .append("SELECT ")
+                .append("SELECT\n    ")
                 .append(select)
-                .append(" FROM ")
+                .append("\nFROM ")
                 .append(tabela.from);
 
         List<Object> parametros = new ArrayList<>();
         String termo = request.termo();
         if (termo != null && !termo.isBlank()) {
-            sql.append(" WHERE ");
+            sql.append("\nWHERE\n    ");
             List<String> filtros = tabela.campos.values().stream()
                     .filter(CampoRelatorio::pesquisavel)
                     .map(campo -> "LOWER(CAST(" + campo.expressaoSql + " AS TEXT)) LIKE ?")
                     .toList();
-            sql.append(String.join(" OR ", filtros));
+            sql.append(String.join("\n    OR ", filtros));
             String termoLike = "%" + termo.toLowerCase(Locale.ROOT).trim() + "%";
             for (int i = 0; i < filtros.size(); i++) {
                 parametros.add(termoLike);
             }
         }
 
-        sql.append(" ORDER BY 1 LIMIT ").append(LIMITE_RESULTADOS);
+        sql.append("\nORDER BY 1\nLIMIT ").append(LIMITE_RESULTADOS);
 
-        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql.toString(), parametros.toArray());
+        String consultaSql = sql.toString();
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(consultaSql, parametros.toArray());
         List<String> cabecalhos = camposSelecionados.stream()
                 .map(CampoRelatorio::rotulo)
                 .toList();
 
-        return new RelatorioResponseDTO(cabecalhos, linhas);
+        return new RelatorioResponseDTO(formatarSqlParaExibicao(consultaSql, parametros), cabecalhos, linhas);
     }
 
     public byte[] gerarCsv(RelatorioRequestDTO request) {
@@ -118,8 +120,26 @@ public class RelatorioService {
     private String montarSelect(List<CampoRelatorio> camposSelecionados) {
         return camposSelecionados.stream()
                 .map(campo -> campo.expressaoSql + " AS " + campo.alias)
-                .reduce((atual, proximo) -> atual + ", " + proximo)
+                .reduce((atual, proximo) -> atual + ",\n    " + proximo)
                 .orElseThrow();
+    }
+
+    private String formatarSqlParaExibicao(String sql, List<Object> parametros) {
+        String sqlFormatado = sql;
+        for (Object parametro : parametros) {
+            sqlFormatado = sqlFormatado.replaceFirst("\\?", Matcher.quoteReplacement(formatarParametroSql(parametro)));
+        }
+        return sqlFormatado + ";";
+    }
+
+    private String formatarParametroSql(Object parametro) {
+        if (parametro == null) {
+            return "NULL";
+        }
+        if (parametro instanceof Number || parametro instanceof Boolean) {
+            return parametro.toString();
+        }
+        return "'" + parametro.toString().replace("'", "''") + "'";
     }
 
     private String formatarValorCsv(Object valor) {
